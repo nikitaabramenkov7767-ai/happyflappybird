@@ -18,6 +18,9 @@ public class ScreenGame implements Screen {
     private BitmapFont font;
     private int score;
 
+    private float gameTimer = 0;
+    private float speedModifier = 1.0f;
+
     private static final int TUBE_COUNT = 4;
 
     public ScreenGame(MyGdxGame game) {
@@ -50,9 +53,7 @@ public class ScreenGame implements Screen {
         }
 
         bird.draw(game.batch);
-
         font.draw(game.batch, "Score: " + score, MyGdxGame.VIRTUAL_WIDTH - 250, MyGdxGame.VIRTUAL_HEIGHT - 50);
-
         game.batch.end();
     }
 
@@ -60,8 +61,15 @@ public class ScreenGame implements Screen {
         if (Gdx.input.justTouched()) bird.onClick();
         bird.fly(delta);
 
+        gameTimer += delta;
+        if (gameTimer > 5f) {
+            speedModifier += 0.15f;
+            gameTimer = 0;
+            if (speedModifier > 3.0f) speedModifier = 3.0f;
+        }
+
         for (Tube tube : tubes) {
-            tube.move();
+            tube.move(speedModifier);
 
             if (tube.needAddPoint(bird)) {
                 score++;
